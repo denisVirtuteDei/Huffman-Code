@@ -44,8 +44,8 @@ namespace HuffmanCode
             }
 
             return result;
-        }    
-       
+        }
+
         private double Probability(int count, int len)
         {
             return (count / (double)len);
@@ -63,8 +63,16 @@ namespace HuffmanCode
 
         public void DictionaryView(Dictionary<char, string> dictionary)
         {
-            foreach (var elem in dictionary)
-                Console.WriteLine(elem.Key + "   " + elem.Value);
+            var dic = dictionary.OrderBy(str => str.Value.Length);
+            foreach (var elem in dic)
+            {
+                if (elem.Key == '\n')
+                    Console.WriteLine("\\n" + "   " + elem.Value);
+                else if (elem.Key == '\r')
+                    Console.WriteLine("\\r" + "   " + elem.Value);
+                else
+                    Console.WriteLine(elem.Key + "   " + elem.Value);
+            }
         }
 
         public double AverageCodeLen(Dictionary<char, double> map, Dictionary<char, string> dictionary)
@@ -77,11 +85,11 @@ namespace HuffmanCode
             }
             return result;
         }
-    
+
         public double Entropy(Dictionary<char, double> map)
         {
             double result = 0;
-            foreach(var elem in map)
+            foreach (var elem in map)
             {
                 result += (elem.Value * Math.Log(elem.Value, 2));
             }
@@ -91,7 +99,7 @@ namespace HuffmanCode
 
     class Program
     {
-        private const string textPath = "..\\text\\5byte.txt";
+        private const string textPath = "..\\text\\byte.txt";
         private const string encodedFile = "..\\text\\Encode.txt";
         private const string resultadoNormal = "..\\text\\Decode.txt";
 
@@ -109,6 +117,8 @@ namespace HuffmanCode
 
             // Init dictionary with tree.
             tree.InitDictionary(dictionary);
+            useDict.DictionaryView(dictionary);
+            Console.WriteLine();
 
             // Encode text with dictionary.
             string encodedString = useDict.CodingText(dictionary);
@@ -121,12 +131,8 @@ namespace HuffmanCode
             Decoding decoding = new Decoding(resultadoNormal);
             Console.WriteLine(decoding.Decode(encodedFile).Length);
 
-            Console.WriteLine(useDict.AverageCodeLen(map, dictionary));
-            Console.WriteLine(useDict.Entropy(map));
-
-#if DEBUG
-            useDict.DictionaryView(dictionary);
-#endif
+            Console.WriteLine("Average code length: " + useDict.AverageCodeLen(map, dictionary));
+            Console.WriteLine("Entropy: " + useDict.Entropy(map));
         }
     }
 }
